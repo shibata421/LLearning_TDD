@@ -11,43 +11,80 @@ import java.util.Set;
 
 public class Hangman {
 
-	Set<String> usedWordsSet = new HashSet<>();
-	List<String> wordsList = new ArrayList<>();
+	public Set<String> usedWordsSet = new HashSet<>();
+	public List<String> wordsList = new ArrayList<>();
 
+	/**
+	 * countAlphabet() returns how many times the alphabet appears in the word.
+	 * 
+	 * @param word
+	 * @param alphabet
+	 * @return
+	 */
 	public int countAlphabet(String word, char alphabet) {
 		int result = 0;
-
 		for (char c : word.toCharArray()) {
-			if (c == alphabet) {
+			if (c == alphabet)
 				result++;
-			}
 		}
-
 		return result;
 	}
 
+	/**
+	 * fetchWord(requestedLength) returns a word of requestedLength from the
+	 * wordsList. It also ensures that the word was not fetched previously by
+	 * checking with the usedWordsSet
+	 * 
+	 * @param requestedLength
+	 * @return
+	 */
 	public String fetchWord(int requestedLength) {
-		for (String result : wordsList) {
-			if (result.length() != requestedLength)
+		String result = null;
+		for (String word : wordsList) {
+			if (word.length() != requestedLength)
 				continue;
-			else if (usedWordsSet.add(result))
-				return result;
+			else if (usedWordsSet.add(word)) {
+				result = word;
+				break;
+			}
 		}
-		return null;
+		return result;
 	}
 
+	/**
+	 * loadWords() reads each line that has a word from WordSource.txt and adds each
+	 * word to the wordsList
+	 */
 	public void loadWords() {
-		String word = null;
+		String line;
 		try (BufferedReader br = new BufferedReader(new FileReader("WordSource.txt"))) {
-			while ((word = br.readLine()) != null) {
-				wordsList.add(word);
+
+			while ((line = br.readLine()) != null) {
+				wordsList.add(line);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	public String fetchClue(String word) {
+		StringBuilder clue = new StringBuilder();
+		for (int i = 0; i < word.length(); i++) {
+			clue.append("-");
+		}
+		return clue.toString();
+	}
+
+	public String fetchClue(String word, String clue, char guess) {
+		StringBuilder newClue = new StringBuilder();
+		for (int i = 0; i < word.length(); i++) {
+			if (guess == word.charAt(i) && guess != clue.charAt(i))
+				newClue.append(guess);
+			else
+				newClue.append(clue.charAt(i));
+		}
+		return newClue.toString();
 	}
 }
