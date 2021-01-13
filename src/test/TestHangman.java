@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import main.Hangman;
+import main.ScoreDB;
 
 class TestHangman {
 
@@ -21,7 +22,8 @@ class TestHangman {
 	static Hangman hangman;
 	static Random random;
 	int requestedLength;
-
+	ScoreDB db;
+	
 	@BeforeAll
 	static void setUp() {
 		hangman = new Hangman();
@@ -32,6 +34,7 @@ class TestHangman {
 	@BeforeEach
 	void setUpEach() {
 		requestedLength = random.nextInt(6) + 5;
+		db = new ScoreDB();
 	}
 
 	@Test
@@ -162,5 +165,26 @@ class TestHangman {
 		double score = hangman.getScore();
 		double actualScore = 0.0;
 		assertEquals(actualScore, score, 0.01);
+	}
+	
+	@Test
+	void test_saveToDB() {
+		String word = "pizza";
+		Double score = 10.0;
+		assertTrue(db.save(word, score));
+	}
+	
+	@Test
+	void test_fetchAScoreGivenTheWord() {
+		String word = "pizza";
+		Double score = 10.0;
+		db.save(word, score);
+		assertEquals(10.0, db.checkWord(word), 0.001);
+	}
+	
+	@Test
+	void test_fetchAScoreGivenTheWordIsNotContainedInDB() {
+		String word = "pizzb";
+		assertEquals(0.0, db.checkWord(word), 0.001);
 	}
 }
