@@ -13,6 +13,9 @@ public class Hangman {
 
 	public Set<String> usedWordsSet = new HashSet<>();
 	public List<String> wordsList = new ArrayList<>();
+	public static final int MAX_TRIALS = 10;
+	private int remainingTrials;
+	private double score;
 
 	/**
 	 * countAlphabet() returns how many times the alphabet appears in the word.
@@ -74,17 +77,36 @@ public class Hangman {
 		for (int i = 0; i < word.length(); i++) {
 			clue.append("-");
 		}
+		remainingTrials = MAX_TRIALS;
+		score = 0.0;
 		return clue.toString();
 	}
 
 	public String fetchClue(String word, String clue, char guess) {
+		if (guess >= 'A' && guess <= 'Z') {
+			guess += 32;
+		}
+		if(guess < 'a' || guess > 'z') {
+			throw new IllegalArgumentException("Invalid character");
+		}
 		StringBuilder newClue = new StringBuilder();
 		for (int i = 0; i < word.length(); i++) {
-			if (guess == word.charAt(i) && guess != clue.charAt(i))
+			if (guess == word.charAt(i) && guess != clue.charAt(i)) {
 				newClue.append(guess);
-			else
-				newClue.append(clue.charAt(i));
+				score += MAX_TRIALS/word.length();
+			} else {
+				newClue.append(clue.charAt(i));				
+			}
 		}
+		remainingTrials--;
 		return newClue.toString();
+	}
+
+	public int getRemainingTrials() {
+		return remainingTrials;
+	}
+
+	public double getScore() {
+		return score;
 	}
 }
